@@ -22,6 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-environment/.env
-.env
-environment/.env
+*.env
+*environment/.env
+
