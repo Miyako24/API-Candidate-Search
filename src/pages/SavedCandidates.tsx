@@ -1,25 +1,63 @@
 import { useEffect, useState } from 'react';
-import { Candidate } from '../interfaces/Candidate.interface'; // Make sure this interface exists and matches your data
+import { Candidate } from '../interfaces/Candidate.interface';
 
 const SavedCandidates = () => {
   const [savedCandidates, setSavedCandidates] = useState<Candidate[]>([]);
+  const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
+  const [sortBy, setSortBy] = useState('name');
+  const [filterText, setFilterText] = useState('');
 
-  // Load saved candidates from localStorage when page loads
   useEffect(() => {
     const stored = localStorage.getItem('savedCandidates');
     if (stored) {
-      setSavedCandidates(JSON.parse(stored));
+      const parsed = JSON.parse(stored);
+      setSavedCandidates(parsed);
+      setFilteredCandidates(parsed);
     }
   }, []);
 
+  useEffect(() => {
+    let filtered = [...savedCandidates];
+
+    if (filterText) {
+      filtered = filtered.filter((c) =>
+        (c.name || '').toLowerCase().includes(filterText.toLowerCase()) ||
+        c.login.toLowerCase().includes(filterText.toLowerCase())
+      );
+    }
+
+    if (sortBy === 'name') {
+      filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    } else if (sortBy === 'location') {
+      filtered.sort((a, b) => (a.location || '').localeCompare(b.location || ''));
+    }
+
+    setFilteredCandidates(filtered);
+  }, [filterText, sortBy, savedCandidates]);
+
   return (
     <div className="saved-candidates">
-      <h1>Saved Candidates</h1>
-      {savedCandidates.length === 0 ? (
-        <p>No candidates have been accepted yet.</p>
+      <h1>Potential Candidates</h1>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <input
+          type="text"
+          placeholder="Filter by name or username"
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+          style={{ marginRight: '1rem' }}
+        />
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="name">Sort by Name</option>
+          <option value="location">Sort by Location</option>
+        </select>
+      </div>
+
+      {filteredCandidates.length === 0 ? (
+        <p>No candidates have been accepted.</p>
       ) : (
         <div className="candidates-grid">
-          {savedCandidates.map((candidate, index) => (
+          {filteredCandidates.map((candidate, index) => (
             <div className="candidate-card" key={index}>
               <img
                 src={candidate.avatar_url}

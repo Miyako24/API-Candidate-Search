@@ -29,7 +29,7 @@ const CandidateSearch = () => {
     const updatedSaved = [...savedCandidates, current];
     setSavedCandidates(updatedSaved);
     localStorage.setItem("savedCandidates", JSON.stringify(updatedSaved));
-    setCurrentIndex((prev) => prev + 5);
+    setCurrentIndex((prev) => prev + 1);
   };
 
   const handleSkip = () => {
@@ -41,7 +41,7 @@ const CandidateSearch = () => {
   }
 
   if (currentIndex >= candidates.length) {
-    return <p>No candidates have been accepted.</p>;
+    return <p>No more candidates are available.</p>;
   }
 
   const candidate = candidates[currentIndex];
